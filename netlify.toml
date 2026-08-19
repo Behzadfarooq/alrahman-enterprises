@@ -1,0 +1,29 @@
+# Netlify build configuration for the Al Rahman Enterprises site.
+# The Next.js runtime plugin is installed automatically by Netlify and handles
+# server components, server actions, image optimisation and middleware.
+
+[build]
+  command = "prisma generate && next build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Long-lived caching for hashed build assets.
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    cache-control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Prisma's generated client and query engine must ship with the functions.
+[functions]
+  included_files = ["node_modules/.prisma/client/**", "node_modules/@prisma/client/**"]

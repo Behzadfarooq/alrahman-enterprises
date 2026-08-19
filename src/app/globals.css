@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-manrope), var(--font-inter), ui-sans-serif, sans-serif;
+
+  /* Brand — deep midnight teal with a warm amber accent */
+  --color-brand-50: #eef7f7;
+  --color-brand-100: #d5ebeb;
+  --color-brand-200: #aed8d9;
+  --color-brand-300: #7bbcbe;
+  --color-brand-400: #4a9a9d;
+  --color-brand-500: #2f7d81;
+  --color-brand-600: #246468;
+  --color-brand-700: #1f5154;
+  --color-brand-800: #0f3336;
+  --color-brand-900: #0a2426;
+  --color-brand-950: #061618;
+
+  --color-accent-50: #fff8ec;
+  --color-accent-100: #ffedcc;
+  --color-accent-200: #ffd894;
+  --color-accent-300: #ffbe5c;
+  --color-accent-400: #fda52f;
+  --color-accent-500: #f28a0c;
+  --color-accent-600: #d66c05;
+  --color-accent-700: #b25009;
+
+  --shadow-card: 0 1px 2px rgb(6 22 24 / 0.06), 0 8px 24px -12px rgb(6 22 24 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(6 22 24 / 0.06), 0 18px 40px -16px rgb(6 22 24 / 0.28);
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #ffffff;
+  color: var(--color-brand-950);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Focus ring consistent across the whole site */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@utility container-page {
+  width: 100%;
+  margin-inline: auto;
+  max-width: 80rem;
+  padding-inline: 1rem;
+  @media (min-width: 640px) {
+    padding-inline: 1.5rem;
+  }
+  @media (min-width: 1024px) {
+    padding-inline: 2rem;
+  }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@utility animate-rise {
+  animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

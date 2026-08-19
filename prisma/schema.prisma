@@ -1,0 +1,93 @@
+// Al Rahman Enterprises — product catalogue schema
+generator client {
+  provider = "prisma-client-js"
+  // "native" for local development; the rhel target is what Netlify's
+  // Linux functions need at runtime.
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String   @default("Administrator")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Brand {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  logoUrl   String?
+  about     String?
+  sortOrder Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+
+  @@index([slug])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  imageUrl    String?
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+
+  @@index([slug])
+}
+
+model Product {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  modelNumber String?
+  description String?
+  // Free-form spec sheet: [{ label: "Capacity", value: "1.5 Ton" }]
+  specs       Json    @default("[]")
+
+  // Price stored in whole rupees. Null means "price on enquiry".
+  priceInr      Int?
+  mrpInr        Int?
+  promoText     String?
+
+  inStock    Boolean @default(true)
+  isFeatured Boolean @default(false)
+  isPublished Boolean @default(true)
+
+  brandId    String?
+  brand      Brand?    @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  images    ProductImage[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([slug])
+  @@index([brandId])
+  @@index([categoryId])
+  @@index([isFeatured])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  url       String
+  alt       String?
+  sortOrder Int     @default(0)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+}

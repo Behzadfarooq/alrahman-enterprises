@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800" role="img">
+  <defs>
+    <linearGradient id="bga" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eafaff"/><stop offset="100%" stop-color="#d5eefb"/>
+    </linearGradient>
+    <linearGradient id="steela" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffffff"/><stop offset="45%" stop-color="#e8edf3"/>
+      <stop offset="55%" stop-color="#dfe6ee"/><stop offset="100%" stop-color="#f6f9fc"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="800" fill="url(#bga)"/>
+  <ellipse cx="400" cy="700" rx="230" ry="26" fill="#0f172a" opacity="0.10"/>
+  
+    <rect x="180" y="270" width="440" height="130" rx="30" fill="url(#steela)" stroke="#94a3b8" stroke-width="3"/>
+    <rect x="205" y="360" width="390" height="16" rx="8" fill="#cbd5e1"/>
+    <rect x="490" y="296" width="96" height="26" rx="8" fill="#0f172a" opacity="0.7"/>
+    <circle cx="506" cy="309" r="5" fill="#38bdf8"/>
+    <g stroke="#7dd3fc" stroke-width="10" stroke-linecap="round" opacity="0.85">
+      <path d="M280 440 q22 34 0 68"/><path d="M360 440 q22 34 0 68"/>
+      <path d="M440 440 q22 34 0 68"/><path d="M520 440 q22 34 0 68"/>
+    </g>
+</svg>
