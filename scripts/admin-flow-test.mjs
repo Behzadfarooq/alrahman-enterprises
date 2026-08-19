@@ -13,7 +13,7 @@ import { writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-const BASE = "http://localhost:3411";
+const BASE = process.env.TEST_BASE_URL ?? "http://localhost:3411";
 const prisma = new PrismaClient();
 const out = [];
 const check = (n, ok, extra = "") => out.push(`${ok ? "PASS" : "FAIL"}  ${n}${extra ? " — " + extra : ""}`);
@@ -35,7 +35,7 @@ await page.goto(`${BASE}/admin/login`);
 await page.fill('input[name="email"]', process.env.ADMIN_EMAIL);
 await page.fill('input[name="password"]', "definitely-wrong");
 await page.click('button[type="submit"]');
-await page.waitForTimeout(1200);
+await page.waitForTimeout(4000);
 check("wrong password shows an error", await page.getByText(/Incorrect email or password/i).isVisible());
 
 // --- Login correctly (fresh page so the failed attempt cannot interfere)
@@ -51,7 +51,8 @@ await page.goto(`${BASE}/admin/brands`);
 await page.fill('input[name="name"]', "Testo Appliances");
 await page.fill('textarea[name="about"]', "A brand created by the automated check.");
 await page.click('button[type="submit"]:has-text("Add brand")');
-await page.waitForTimeout(1500);
+// Wait for the row to appear rather than guessing a delay (production is remote).
+await page.getByText("Testo Appliances").first().waitFor({ timeout: 30000 });
 const brandRow = await prisma.brand.findFirst({ where: { name: "Testo Appliances" } });
 check("brand created via admin UI", Boolean(brandRow), brandRow?.slug);
 
@@ -59,7 +60,7 @@ check("brand created via admin UI", Boolean(brandRow), brandRow?.slug);
 await page.goto(`${BASE}/admin/categories`);
 await page.fill('input[name="name"]', "Test Gadgets");
 await page.click('button[type="submit"]:has-text("Add category")');
-await page.waitForTimeout(1500);
+await page.getByText("Test Gadgets").first().waitFor({ timeout: 30000 });
 const catRow = await prisma.category.findFirst({ where: { name: "Test Gadgets" } });
 check("category created via admin UI", Boolean(catRow), catRow?.slug);
 
@@ -119,7 +120,7 @@ await page.goto(`${BASE}/admin/products`);
 await page.getByText("Testo Smart Kettle 2.0 L").first().waitFor({ timeout: 15000 });
 const row = page.locator("ul > li").filter({ hasText: "Testo Smart Kettle 2.0 L" }).first();
 await row.getByRole("button", { name: "In stock", exact: true }).click();
-await page.waitForTimeout(1800);
+await page.waitForTimeout(6000);
 const toggled = await prisma.product.findUnique({ where: { id: created.id } });
 check("stock toggle works from the list", toggled?.inStock === false, `inStock=${toggled?.inStock}`);
 
@@ -128,7 +129,7 @@ await page.goto(`${BASE}/admin/products/new`);
 await page.fill('input[name="name"]', "A");
 await page.locator('input[name="name"]').evaluate((el) => el.removeAttribute("required"));
 await page.click('button[type="submit"]:has-text("Add product")');
-await page.waitForTimeout(1500);
+await page.waitForTimeout(5000);
 check("short name rejected with a message", await page.getByText(/Product name is required|fix the highlighted/i).first().isVisible());
 
 // --- Delete the product
@@ -137,7 +138,7 @@ await page.goto(`${BASE}/admin/products`);
 await page.getByText("Testo Smart Kettle 2.0 L").first().waitFor({ timeout: 15000 });
 const row2 = page.locator("ul > li").filter({ hasText: "Testo Smart Kettle 2.0 L" }).first();
 await row2.getByRole("button", { name: "Delete" }).click();
-await page.waitForTimeout(2000);
+await page.waitForTimeout(6000);
 check("product deleted", !(await prisma.product.findUnique({ where: { id: created.id } })));
 
 // --- Clean up the test taxonomy

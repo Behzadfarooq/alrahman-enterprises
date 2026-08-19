@@ -214,6 +214,14 @@ with `pnpm db:deploy`.
 
 ---
 
+### A note on `connection_limit`
+
+The pooled `DATABASE_URL` must allow more than one connection, e.g.
+`?sslmode=require&pgbouncer=true&connection_limit=5&pool_timeout=30`.
+`connection_limit=1` looks right for serverless, but `next build` prerenders
+pages in parallel workers and will fail with *"Timed out fetching a new
+connection from the connection pool"* against a remote database.
+
 ## Environment variables
 
 | Variable | Required | Description |

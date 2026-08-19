@@ -11,7 +11,7 @@ import bcrypt from "bcryptjs";
 import sharp from "sharp";
 
 
-const BASE = "http://localhost:3411";
+const BASE = process.env.TEST_BASE_URL ?? "http://localhost:3411";
 const prisma = new PrismaClient();
 const results = [];
 const check = (name, pass, extra = "") => {
@@ -60,7 +60,8 @@ const up = await fetch(`${BASE}/api/admin/upload`, { method: "POST", headers: { 
 const upJson = await up.json();
 check("authenticated image upload", up.ok && Array.isArray(upJson.urls), JSON.stringify(upJson).slice(0, 120));
 if (upJson.urls?.[0]) {
-  const img = await fetch(`${BASE}${upJson.urls[0]}`);
+  // Local driver returns a relative path; Supabase returns an absolute URL.
+  const img = await fetch(new URL(upJson.urls[0], BASE));
   const type = img.headers.get("content-type");
   check("uploaded image is served", img.ok, `${upJson.urls[0]} (${type})`);
   check("upload converted to webp", upJson.urls[0].endsWith(".webp"));
